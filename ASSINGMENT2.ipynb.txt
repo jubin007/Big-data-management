@@ -1,0 +1,924 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 260,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "downloadsRDD = sc.textFile(\"file:////home/jubin/Downloads/2018-11-20.csv.gz\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 261,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "downloadsRDD=downloadsRDD.map(lambda x:x.split(',')) "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 262,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#started with some practical examples for practise.\n",
+    "def remove_quotation(x):\n",
+    "        return([xx.replace('\"', '') for xx in x])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 263,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "downloadsRDD = downloadsRDD.map(remove_quotation)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 264,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "2954273"
+      ]
+     },
+     "execution_count": 264,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "downloadsRDD.count()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 265,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "downloadsDF = sqlContext.createDataFrame(data = downloadsRDD.filter(lambda x:x[0]!='date'),\n",
+    "                                        schema = downloadsRDD.filter(lambda x:x[0]=='date').collect()[0])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 266,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+----------+--------+-------+---------+------+------------+-------------+---------+-------+-----+\n",
+      "|      date|    time|   size|r_version|r_arch|        r_os|      package|  version|country|ip_id|\n",
+      "+----------+--------+-------+---------+------+------------+-------------+---------+-------+-----+\n",
+      "|2018-11-20|05:44:23|2189562|    3.5.1|x86_64|   linux-gnu|          cli|    1.0.1|     US|    1|\n",
+      "|2018-11-20|05:44:26|1170009|    3.3.3|x86_64|   linux-gnu|      flexmix|   2.3-14|     US|    2|\n",
+      "|2018-11-20|05:44:35|  17934|       NA|    NA|          NA|          pRF|      1.0|     US|    3|\n",
+      "|2018-11-20|05:44:40| 259048|    3.5.1|x86_64|darwin15.6.0|     pbkrtest|    0.4-7|     HK|    4|\n",
+      "|2018-11-20|05:44:40|  62381|    3.3.3|x86_64|   linux-gnu|        abind|    1.4-5|     HK|    4|\n",
+      "|2018-11-20|05:44:30|1760441|    3.5.1|x86_64|   linux-gnu|   dendextend|    1.9.0|     US|    2|\n",
+      "|2018-11-20|05:44:26| 348048|    3.5.1|x86_64|   linux-gnu|      foreign|   0.8-71|     US|    1|\n",
+      "|2018-11-20|05:44:32|  47814|    3.3.3|x86_64|   linux-gnu|   rstudioapi|      0.8|     US|    1|\n",
+      "|2018-11-20|05:44:28|    512|    3.5.1|x86_64|darwin15.6.0|        rjson|   0.2.20|     US|    2|\n",
+      "|2018-11-20|05:44:33| 334299|    3.4.4|x86_64|   linux-gnu|scatterplot3d|   0.3-41|     US|    5|\n",
+      "|2018-11-20|05:44:39| 817523|    3.4.4|x86_64|   linux-gnu|        rlang|  0.3.0.1|     US|    6|\n",
+      "|2018-11-20|05:44:39| 817523|    3.5.1|x86_64|   linux-gnu|        rlang|  0.3.0.1|     US|    7|\n",
+      "|2018-11-20|05:44:29|  49089|    3.5.1|x86_64|   linux-gnu|         xfun|      0.4|     NA|    8|\n",
+      "|2018-11-20|05:44:34| 379515|    3.5.1|x86_64|   linux-gnu|        tidyr|    0.8.2|     US|    1|\n",
+      "|2018-11-20|05:44:30|3639704|    3.5.1|x86_64|darwin13.4.0|         Rcpp|    1.0.0|     US|    1|\n",
+      "|2018-11-20|05:44:31| 795135|    3.5.1|x86_64|darwin15.6.0|   LearnBayes|   2.15.1|     CN|    9|\n",
+      "|2018-11-20|05:44:34|4536151|    3.5.1|x86_64|     mingw32|         Rcpp|    1.0.0|     HK|    4|\n",
+      "|2018-11-20|05:44:31|2520024|    3.5.1|x86_64|     mingw32|          fda|    2.4.8|     SG|   10|\n",
+      "|2018-11-20|05:44:32|4602959|    3.5.1|x86_64|     mingw32|          XML|3.98-1.16|     SG|   10|\n",
+      "|2018-11-20|05:44:33| 657431|    3.5.1|x86_64|     mingw32|          tis|     1.34|     SG|   10|\n",
+      "|2018-11-20|05:44:33| 230951|    3.5.1|x86_64|   linux-gnu|         jpeg|    0.1-8|     SG|   10|\n",
+      "|2018-11-20|05:44:22|1193291|    3.5.1|x86_64|     mingw32|      openssl|      1.1|     NA|    8|\n",
+      "|2018-11-20|05:44:31|4528319|    3.5.1|x86_64|   linux-gnu|        shiny|    1.2.0|     HK|   11|\n",
+      "|2018-11-20|05:44:04|1864224|    3.5.1|x86_64|darwin15.6.0|       Matrix|   1.2-15|     US|    1|\n",
+      "|2018-11-20|05:44:30| 537537|    3.5.1|x86_64|     mingw32|          xts|   0.11-2|     US|   12|\n",
+      "|2018-11-20|05:44:40|3622662|    3.5.1|x86_64|     mingw32|      ggplot2|    3.1.0|     JP|   13|\n",
+      "|2018-11-20|05:44:33|3694381|    3.5.1|x86_64|     mingw32|         maps|    3.3.0|     KR|   14|\n",
+      "|2018-11-20|05:44:33|1869962|    3.5.1|x86_64|     mingw32|           sp|    1.3-1|     KR|   14|\n",
+      "|2018-11-20|05:44:34| 472492|    3.5.1|x86_64|     mingw32|        proto|    1.0.0|     KR|   14|\n",
+      "|2018-11-20|05:44:34| 904091|    3.5.1|x86_64|     mingw32|  RgoogleMaps|    1.4.3|     KR|   14|\n",
+      "+----------+--------+-------+---------+------+------------+-------------+---------+-------+-----+\n",
+      "only showing top 30 rows\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "downloadsDF.show(30)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 267,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['date',\n",
+       " 'time',\n",
+       " 'size',\n",
+       " 'r_version',\n",
+       " 'r_arch',\n",
+       " 'r_os',\n",
+       " 'package',\n",
+       " 'version',\n",
+       " 'country',\n",
+       " 'ip_id']"
+      ]
+     },
+     "execution_count": 267,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "downloadsDF.columns"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 268,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "StructType(List(StructField(date,StringType,true),StructField(time,StringType,true),StructField(size,StringType,true),StructField(r_version,StringType,true),StructField(r_arch,StringType,true),StructField(r_os,StringType,true),StructField(package,StringType,true),StructField(version,StringType,true),StructField(country,StringType,true),StructField(ip_id,StringType,true)))"
+      ]
+     },
+     "execution_count": 268,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "downloadsDF.schema"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 269,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "DataFrame[date: string, time: string, size: string, r_version: string, r_arch: string, r_os: string, package: string, version: string, country: string, ip_id: string]"
+      ]
+     },
+     "execution_count": 269,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "downloadsDF.persist()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 270,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[('date', 'string'),\n",
+       " ('time', 'string'),\n",
+       " ('size', 'string'),\n",
+       " ('r_version', 'string'),\n",
+       " ('r_arch', 'string'),\n",
+       " ('r_os', 'string'),\n",
+       " ('package', 'string'),\n",
+       " ('version', 'string'),\n",
+       " ('country', 'string'),\n",
+       " ('ip_id', 'string')]"
+      ]
+     },
+     "execution_count": 270,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "downloadsDF.dtypes"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 271,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from pyspark.sql.types import DateType, IntegerType"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 272,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "downloadsDF = downloadsDF.withColumn(\"date\", downloadsDF[\"date\"].cast(DateType()))\n",
+    "downloadsDF = downloadsDF.withColumn(\"size\", downloadsDF[\"size\"].cast(IntegerType()))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 273,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[('date', 'date'),\n",
+       " ('time', 'string'),\n",
+       " ('size', 'int'),\n",
+       " ('r_version', 'string'),\n",
+       " ('r_arch', 'string'),\n",
+       " ('r_os', 'string'),\n",
+       " ('package', 'string'),\n",
+       " ('version', 'string'),\n",
+       " ('country', 'string'),\n",
+       " ('ip_id', 'string')]"
+      ]
+     },
+     "execution_count": 273,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "downloadsDF.dtypes"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 274,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "downloadsDF = downloadsDF.withColumnRenamed(\"r_os\", \"OS\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 275,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "root\n",
+      " |-- date: date (nullable = true)\n",
+      " |-- time: string (nullable = true)\n",
+      " |-- size: integer (nullable = true)\n",
+      " |-- r_version: string (nullable = true)\n",
+      " |-- r_arch: string (nullable = true)\n",
+      " |-- OS: string (nullable = true)\n",
+      " |-- package: string (nullable = true)\n",
+      " |-- version: string (nullable = true)\n",
+      " |-- country: string (nullable = true)\n",
+      " |-- ip_id: string (nullable = true)\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "downloadsDF.printSchema()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 276,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Row(date=datetime.date(2018, 11, 20), time='05:44:23', size=2189562, r_version='3.5.1', r_arch='x86_64', OS='linux-gnu', package='cli', version='1.0.1', country='US', ip_id='1')"
+      ]
+     },
+     "execution_count": 276,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "downloadsDF.first()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 277,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[Row(date=datetime.date(2018, 11, 20), time='05:44:23', size=2189562, r_version='3.5.1', r_arch='x86_64', OS='linux-gnu', package='cli', version='1.0.1', country='US', ip_id='1'),\n",
+       " Row(date=datetime.date(2018, 11, 20), time='05:44:26', size=1170009, r_version='3.3.3', r_arch='x86_64', OS='linux-gnu', package='flexmix', version='2.3-14', country='US', ip_id='2'),\n",
+       " Row(date=datetime.date(2018, 11, 20), time='05:44:35', size=17934, r_version='NA', r_arch='NA', OS='NA', package='pRF', version='1.0', country='US', ip_id='3'),\n",
+       " Row(date=datetime.date(2018, 11, 20), time='05:44:40', size=259048, r_version='3.5.1', r_arch='x86_64', OS='darwin15.6.0', package='pbkrtest', version='0.4-7', country='HK', ip_id='4'),\n",
+       " Row(date=datetime.date(2018, 11, 20), time='05:44:40', size=62381, r_version='3.3.3', r_arch='x86_64', OS='linux-gnu', package='abind', version='1.4-5', country='HK', ip_id='4')]"
+      ]
+     },
+     "execution_count": 277,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "downloadsDF.head(5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 278,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+----------+\n",
+      "|      date|\n",
+      "+----------+\n",
+      "|2018-11-20|\n",
+      "|2018-11-20|\n",
+      "|2018-11-20|\n",
+      "|2018-11-20|\n",
+      "|2018-11-20|\n",
+      "|2018-11-20|\n",
+      "|2018-11-20|\n",
+      "|2018-11-20|\n",
+      "|2018-11-20|\n",
+      "|2018-11-20|\n",
+      "+----------+\n",
+      "only showing top 10 rows\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "downloadsDF.select('date').show(10)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 279,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+--------+--------+\n",
+      "|    time| package|\n",
+      "+--------+--------+\n",
+      "|05:44:23|     cli|\n",
+      "|05:44:26| flexmix|\n",
+      "|05:44:35|     pRF|\n",
+      "|05:44:40|pbkrtest|\n",
+      "|05:44:40|   abind|\n",
+      "+--------+--------+\n",
+      "only showing top 5 rows\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "downloadsDF.select('time', 'package').show(5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 280,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "package_count = downloadsDF.groupBy(\"package\").count().sort(\"count\", ascending = False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 281,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+-------+-----+\n",
+      "|package|count|\n",
+      "+-------+-----+\n",
+      "|   Rcpp|40528|\n",
+      "|  rlang|38278|\n",
+      "|ggplot2|30887|\n",
+      "|  dplyr|26621|\n",
+      "|   glue|26612|\n",
+      "+-------+-----+\n",
+      "only showing top 5 rows\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "package_count.show(5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 282,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "downloadsDF.createOrReplaceTempView('packages')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 283,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "query_results = spark.sql('SELECT * FROM packages WHERE ip_id=10')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 284,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+----------+--------+-------+---------+------+------------+-------------+---------+-------+-----+\n",
+      "|      date|    time|   size|r_version|r_arch|          OS|      package|  version|country|ip_id|\n",
+      "+----------+--------+-------+---------+------+------------+-------------+---------+-------+-----+\n",
+      "|2018-11-20|05:44:31|2520024|    3.5.1|x86_64|     mingw32|          fda|    2.4.8|     SG|   10|\n",
+      "|2018-11-20|05:44:32|4602959|    3.5.1|x86_64|     mingw32|          XML|3.98-1.16|     SG|   10|\n",
+      "|2018-11-20|05:44:33| 657431|    3.5.1|x86_64|     mingw32|          tis|     1.34|     SG|   10|\n",
+      "|2018-11-20|05:44:33| 230951|    3.5.1|x86_64|   linux-gnu|         jpeg|    0.1-8|     SG|   10|\n",
+      "|2018-11-20|05:44:34|2103841|    3.5.1|x86_64|darwin13.4.0|TeachingDemos|     2.10|     SG|   10|\n",
+      "|2018-11-20|05:44:35| 540436|    3.5.1|x86_64|     mingw32|        Ecfun|    0.1-7|     SG|   10|\n",
+      "|2018-11-20|05:44:37|3950463|    3.5.1|x86_64|     mingw32|        Ecdat|    0.3-1|     SG|   10|\n",
+      "+----------+--------+-------+---------+------+------------+-------------+---------+-------+-----+\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "query_results.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 285,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#Assingment 2 :\n",
+    "#You answer the same questions as in assignment1 but this time you are required to use the SQL API of Apache Spark. Prepare Cassandra structures and Spark code that saves the precomputed data into these structures:\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 286,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#1. Show number of downloads for package ggplot2\n",
+    "ggplot = spark.sql('SELECT package, count(*) as count FROM packages WHERE package=\"ggplot2\" GROUP BY package')\\\n",
+    "    .write.format(\"org.apache.spark.sql.cassandra\")\\\n",
+    "    .options(table=\"ggplots\",keyspace=\"assingment\")\\\n",
+    "    .save(mode=\"append\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 287,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+-------+-----+\n",
+      "|package|count|\n",
+      "+-------+-----+\n",
+      "|ggplot2|30887|\n",
+      "+-------+-----+\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "spark.read.format(\"org.apache.spark.sql.cassandra\")\\\n",
+    "    .load(keyspace=\"assingment\",table=\"ggplots\").show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 288,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#2. Highest number of downloads by country and Operating System.\n",
+    "c_os = spark.sql(\"SELECT country, os, count(*) as counts FROM packages GROUP BY country, OS ORDER BY counts DESC\")\\\n",
+    "    .write.format(\"org.apache.spark.sql.cassandra\")\\\n",
+    "    .options(table=\"co_os\",keyspace=\"assingment\")\\\n",
+    "    .save(mode=\"append\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 289,
+   "metadata": {
+    "scrolled": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+------+-------+------------+\n",
+      "|counts|country|          os|\n",
+      "+------+-------+------------+\n",
+      "|   997|     ID|darwin15.6.0|\n",
+      "|    73|     NL|darwin17.6.0|\n",
+      "| 76474|     US|          NA|\n",
+      "|   343|     PK|darwin15.6.0|\n",
+      "|  2177|     PT|   linux-gnu|\n",
+      "|  3245|     NA|          NA|\n",
+      "|     4|     VI|   linux-gnu|\n",
+      "|  3228|     AR|   linux-gnu|\n",
+      "|    18|     SD|darwin18.0.0|\n",
+      "|  2482|     NO|   linux-gnu|\n",
+      "+------+-------+------------+\n",
+      "only showing top 10 rows\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "spark.read.format(\"org.apache.spark.sql.cassandra\")\\\n",
+    "    .load(keyspace=\"assingment\",table=\"co_os\").show(10)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 290,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#3. Top 10 largest sized packages\n",
+    "l_pk = spark.sql('SELECT package, COUNT(size) as size FROM packages GROUP BY package ORDER BY COUNT(size) DESC')\\\n",
+    "    .write.format(\"org.apache.spark.sql.cassandra\")\\\n",
+    "    .options(table=\"ls_pk\",keyspace=\"assingment\")\\\n",
+    "    .save(mode=\"append\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 291,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+-------------+----+\n",
+      "|      package|size|\n",
+      "+-------------+----+\n",
+      "|          sda| 101|\n",
+      "|RGENERATEPREC|   7|\n",
+      "|        meltt|   8|\n",
+      "|      seacarb|  27|\n",
+      "|         rpst|   3|\n",
+      "|    anametrix|   2|\n",
+      "|          ssc|   7|\n",
+      "|      sglasso|  13|\n",
+      "|     FactorsR|  12|\n",
+      "|    tensorBSS|   3|\n",
+      "+-------------+----+\n",
+      "only showing top 10 rows\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "spark.read.format(\"org.apache.spark.sql.cassandra\")\\\n",
+    "    .load(keyspace=\"assingment\",table=\"ls_pk\").show(10)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 292,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 4. What are the top 50 most popular packages?\n",
+    "p_package = spark.sql('SELECT package, COUNT(package) as count FROM packages GROUP BY package ORDER BY COUNT(package) DESC')\\\n",
+    "    .write.format(\"org.apache.spark.sql.cassandra\")\\\n",
+    "    .options(table=\"p_package\",keyspace=\"assingment\")\\\n",
+    "    .save(mode=\"append\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 293,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+------------------+-----+\n",
+      "|           package|count|\n",
+      "+------------------+-----+\n",
+      "|               sda|  101|\n",
+      "|     RGENERATEPREC|    7|\n",
+      "|             meltt|    8|\n",
+      "|           seacarb|   27|\n",
+      "|              rpst|    3|\n",
+      "|         anametrix|    2|\n",
+      "|               ssc|    7|\n",
+      "|           sglasso|   13|\n",
+      "|          FactorsR|   12|\n",
+      "|         tensorBSS|    3|\n",
+      "|              poio|    3|\n",
+      "|             BLCOP|   20|\n",
+      "|         autoimage|   15|\n",
+      "|               dyn|   41|\n",
+      "|        SimCorrMix|    6|\n",
+      "|            mewAvg|    9|\n",
+      "|    BayesianGLasso|   15|\n",
+      "|      pubmed.mineR|    9|\n",
+      "|               eel|   10|\n",
+      "|          bigchess|   12|\n",
+      "|        orsifronts|    6|\n",
+      "|            shiftR|    4|\n",
+      "|         R4CouchDB|    8|\n",
+      "|             heavy|   15|\n",
+      "|          kSamples|   87|\n",
+      "|         cleandata|   13|\n",
+      "|          svSocket|   10|\n",
+      "|rangeModelMetadata|    8|\n",
+      "|               lss|   12|\n",
+      "|      chemometrics|  147|\n",
+      "|    tempcyclesdata|    3|\n",
+      "|          fitODBOD|    5|\n",
+      "|               ILS|    7|\n",
+      "|              tm1r|    5|\n",
+      "|           polyRAD|   27|\n",
+      "| ROI.models.netlib|    3|\n",
+      "|         BayesMAMS|   14|\n",
+      "|          LogrankA|   11|\n",
+      "|        subprocess|  123|\n",
+      "|               DnE|   15|\n",
+      "|           yummlyr|    4|\n",
+      "|          requireR|    5|\n",
+      "|          vaersvax|    4|\n",
+      "|              bdpv|   17|\n",
+      "|            PQLseq|    3|\n",
+      "|          NBDesign|    7|\n",
+      "|        polylabelr|   48|\n",
+      "|         zoeppritz|    7|\n",
+      "|      ImportExport|   25|\n",
+      "|       rstackdeque|    7|\n",
+      "+------------------+-----+\n",
+      "only showing top 50 rows\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "spark.read.format(\"org.apache.spark.sql.cassandra\")\\\n",
+    "    .load(keyspace=\"assingment\",table=\"p_package\").show(50)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 294,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#5. At what hour there are most of the download hits?\n",
+    "d_hits = spark.sql('SELECT time, COUNT(time) as count FROM packages GROUP BY time ORDER BY COUNT(time) DESC')\\\n",
+    "    .write.format(\"org.apache.spark.sql.cassandra\")\\\n",
+    "    .options(table=\"d_hits\",keyspace=\"assingment\")\\\n",
+    "    .save(mode=\"append\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 295,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+--------+-----+\n",
+      "|    time|count|\n",
+      "+--------+-----+\n",
+      "|07:38:33|   18|\n",
+      "|04:53:36|   26|\n",
+      "|10:24:25|   54|\n",
+      "|13:48:43|   28|\n",
+      "|17:46:13|   36|\n",
+      "|16:47:03|   35|\n",
+      "|04:43:26|   29|\n",
+      "|14:35:48|   35|\n",
+      "|05:08:52|   12|\n",
+      "|08:51:52|   37|\n",
+      "|06:17:33|   27|\n",
+      "|08:13:01|   21|\n",
+      "|19:21:53|   30|\n",
+      "|07:34:45|   23|\n",
+      "|09:20:28|   45|\n",
+      "+--------+-----+\n",
+      "only showing top 15 rows\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "spark.read.format(\"org.apache.spark.sql.cassandra\")\\\n",
+    "    .load(keyspace=\"assingment\",table=\"d_hits\").show(15)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 296,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#6. What is the most popular package in Ireland?\n",
+    "irl_pk = spark.sql('SELECT country, package, COUNT(package) as count FROM packages WHERE country=\"IR\" GROUP BY country, package ORDER BY COUNT(package) DESC')\\\n",
+    "    .write.format(\"org.apache.spark.sql.cassandra\")\\\n",
+    "    .options(table=\"irl_pkgs\",keyspace=\"assingment\")\\\n",
+    "    .save(mode=\"append\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 298,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+-----+-------+----------+\n",
+      "|count|country|   package|\n",
+      "+-----+-------+----------+\n",
+      "|    4|     IR|  xlsxjars|\n",
+      "|   18|     IR| pkgconfig|\n",
+      "|   15|     IR|     plogr|\n",
+      "|   22|     IR|    scales|\n",
+      "|   20|     IR|  lazyeval|\n",
+      "|    7|     IR|rstudioapi|\n",
+      "|   36|     IR|      Rcpp|\n",
+      "|    6|     IR|  timeDate|\n",
+      "|    9|     IR|       zip|\n",
+      "|   14|     IR|    xtable|\n",
+      "|   26|     IR|  magrittr|\n",
+      "|   21|     IR|     withr|\n",
+      "|   17|     IR|      yaml|\n",
+      "|   31|     IR|     rlang|\n",
+      "|   24|     IR|      plyr|\n",
+      "+-----+-------+----------+\n",
+      "only showing top 15 rows\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "spark.read.format(\"org.apache.spark.sql.cassandra\")\\\n",
+    "    .load(keyspace=\"assingment\",table=\"irl_pkgs\").show(15)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 299,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 7. What is the highest number of downloads by a single machine?\n",
+    "ip_pk = spark.sql('SELECT package, ip_id, COUNT(package) as count FROM packages WHERE ip_id=\"1\" GROUP BY package, ip_id ORDER BY COUNT(package) DESC')\\\n",
+    "    .write.format(\"org.apache.spark.sql.cassandra\")\\\n",
+    "    .options(table=\"ip_pk\",keyspace=\"assingment\")\\\n",
+    "    .save(mode=\"append\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 300,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+-----+-----+-------+\n",
+      "|count|ip_id|package|\n",
+      "+-----+-----+-------+\n",
+      "|    2|    1|   xfun|\n",
+      "+-----+-----+-------+\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "spark.read.format(\"org.apache.spark.sql.cassandra\")\\\n",
+    "    .load(keyspace=\"assingment\",table=\"ip_pk\").show(15)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 301,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# 8. What OS is most popular among the R programmers?\n",
+    "os_r = spark.sql('SELECT package, os, COUNT(package) as count FROM packages WHERE package=\"rstudioapi\" GROUP BY package, os ORDER BY COUNT(package) DESC')\\\n",
+    "    .write.format(\"org.apache.spark.sql.cassandra\")\\\n",
+    "    .options(table=\"os_r\",keyspace=\"assingment\")\\\n",
+    "    .save(mode=\"append\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 302,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "+-----+---------------+----------+\n",
+      "|count|             os|   package|\n",
+      "+-----+---------------+----------+\n",
+      "|    4|   darwin17.7.0|rstudioapi|\n",
+      "| 7105|        mingw32|rstudioapi|\n",
+      "|    6|   darwin14.5.0|rstudioapi|\n",
+      "|    9|   darwin18.0.0|rstudioapi|\n",
+      "| 3802|      linux-gnu|rstudioapi|\n",
+      "|  383|   darwin13.4.0|rstudioapi|\n",
+      "|    3|   darwin17.5.0|rstudioapi|\n",
+      "| 1387|   darwin15.6.0|rstudioapi|\n",
+      "|  201|             NA|rstudioapi|\n",
+      "|   16|   darwin17.6.0|rstudioapi|\n",
+      "|    1|   darwin17.2.0|rstudioapi|\n",
+      "|    2|linux-gnueabihf|rstudioapi|\n",
+      "+-----+---------------+----------+\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "spark.read.format(\"org.apache.spark.sql.cassandra\")\\\n",
+    "    .load(keyspace=\"assingment\",table=\"os_r\").show(15)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.5.2"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
